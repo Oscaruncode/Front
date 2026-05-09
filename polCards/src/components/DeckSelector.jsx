@@ -6,13 +6,18 @@ const decks = [
   { id: 'derecha', label: 'Mazo Derecha' },
 ];
 
-const DeckSelector = () => {
+const DeckSelector = ({ selectedDeck, onSelectDeck }) => {
   return (
     <section className="deck-selector">
       <h2>Selecciona un mazo político</h2>
       <div className="deck-buttons">
         {decks.map((deck) => (
-          <button key={deck.id} type="button">
+          <button
+            key={deck.id}
+            type="button"
+            className={deck.id === selectedDeck ? 'active' : ''}
+            onClick={() => onSelectDeck(deck.id)}
+          >
             {deck.label}
           </button>
         ))}
