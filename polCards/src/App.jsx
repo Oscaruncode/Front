@@ -48,7 +48,6 @@ const App = () => {
   const [battleLog, setBattleLog] = useState([]);
   const [matchEnded, setMatchEnded] = useState(false);
   const [profile, setProfile] = useState(null);
-  const [lastTurnResult, setLastTurnResult] = useState(null);
 
   const availableCandidatesForSelection = useMemo(() => {
     return [...politicians].sort((a, b) => {
@@ -190,21 +189,13 @@ const App = () => {
       setUsedCpuNarratives((prev) => [...prev, cpuNarrative.id]);
     }
 
+    setBattleLog((prev) => [
+      { time: `Turno ${turnNumber}`, text: `${winnerText}. Opinión: Jugador ${nextPlayerOpinion}%, CPU ${nextCpuOpinion}%` },
+      ...prev,
+    ]);
+
     const nextTurn = turnNumber + 1;
     const matchOver = nextTurn > MAX_TURNS || availablePlayerHand.length <= 1 || availableCpuHand.length <= 1;
-
-    setLastTurnResult({
-      playerCard: selectedCandidate,
-      cpuCard,
-      playerNarrative,
-      cpuNarrative,
-      result,
-      winnerText,
-      nextPlayerOpinion,
-      nextCpuOpinion,
-      turnNumber,
-      matchOver,
-    });
 
     if (matchOver) {
       setMatchEnded(true);
@@ -218,14 +209,9 @@ const App = () => {
       setScreen('end');
     } else {
       setTurnNumber(nextTurn);
-      setScreen('result');
+      setSelectedCandidateId(null);
+      setSelectedNarrativeId(null);
     }
-  };
-
-  const handleNextTurn = () => {
-    setSelectedCandidateId(null);
-    setSelectedNarrativeId(null);
-    setScreen('battle');
   };
 
   const toggleDeck = (deckId) => {
@@ -323,61 +309,6 @@ const App = () => {
             maxTurns={MAX_TURNS}
             matchEnded={matchEnded}
           />
-        </main>
-      </div>
-    );
-  }
-
-  if (screen === 'result') {
-    return (
-      <div className="screen">
-        <header>
-          <h1>Policars 2</h1>
-        </header>
-        <main className="screen-content">
-          <section className="turn-result">
-            <h2>Resultado del Turno {lastTurnResult?.turnNumber}</h2>
-            <div className="battle-summary">
-              <div className="card-comparison">
-                <div className="player-side">
-                  <h3>Tu jugada</h3>
-                  <Card {...lastTurnResult?.playerCard} />
-                  {lastTurnResult?.playerNarrative && (
-                    <Card
-                      title={lastTurnResult.playerNarrative.name}
-                      description={`Efecto: ${Object.entries(lastTurnResult.playerNarrative.effect)
-                        .map(([key, value]) => `${key} ${value > 0 ? '+' : ''}${value}`)
-                        .join(', ')}`}
-                    />
-                  )}
-                </div>
-                <div className="vs">VS</div>
-                <div className="cpu-side">
-                  <h3>Jugada CPU</h3>
-                  <Card {...lastTurnResult?.cpuCard} className="card-back" />
-                  {lastTurnResult?.cpuNarrative && (
-                    <Card
-                      title={lastTurnResult.cpuNarrative.name}
-                      description={`Efecto: ${Object.entries(lastTurnResult.cpuNarrative.effect)
-                        .map(([key, value]) => `${key} ${value > 0 ? '+' : ''}${value}`)
-                        .join(', ')}`}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="result-details">
-                <p className="winner-text">{lastTurnResult?.winnerText}</p>
-                <div className="opinion-change">
-                  <p>Opinión pública:</p>
-                  <p>Jugador: {lastTurnResult?.nextPlayerOpinion}%</p>
-                  <p>CPU: {lastTurnResult?.nextCpuOpinion}%</p>
-                </div>
-              </div>
-            </div>
-            <button type="button" className="continue-button" onClick={handleNextTurn}>
-              Continuar al siguiente turno
-            </button>
-          </section>
         </main>
       </div>
     );
