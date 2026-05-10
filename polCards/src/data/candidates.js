@@ -100,7 +100,7 @@ export const politicians = [
     name: 'Sondra Macollins',
     party: 'Independiente',
     type: 'centro',
-    image: '/imagenes/sondra_macollins.png',
+    image: '/images/sondra_macollins.png',
     stats: { propuestas: 68, experiencia: 50, escandalos: 12 },
   },
 ];
