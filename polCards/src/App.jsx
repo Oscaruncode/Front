@@ -392,9 +392,6 @@ const App = () => {
               </button>
               {ratingMessage && <p style={{ marginTop: '12px', fontStyle: 'italic', color: '#059669' }}>{ratingMessage}</p>}
             </div>
-            {profile && (
-              <pre>{JSON.stringify(profile, null, 2)}</pre>
-            )}
           </section>
         </main>
         {showAdjustmentModal && (
