@@ -309,7 +309,10 @@ const App = () => {
                     backgroundColor: '#f5e6d3',
                   }}>
                     <h3 style={{ margin: '0 0 8px 0' }}>{candidate.name}</h3>
-                    <p style={{ fontSize: '0.9rem', color: '#666', margin: 0, marginBottom: '12px' }}>{candidate.party}</p>
+                    <p style={{ fontSize: '0.9rem', color: '#666', margin: 0, marginBottom: '6px' }}>{candidate.party}</p>
+                    {candidate.vice && (
+                      <p style={{ fontSize: '0.85rem', color: '#444', margin: '0 0 12px 0' }}><strong>Fórmula vicepresidencial:</strong> {candidate.vice}</p>
+                    )}
                     <div>
                       <p style={{ margin: '6px 0' }}><strong>Propuestas:</strong> {candidate.stats.propuestas}</p>
                       <p style={{ margin: '6px 0' }}><strong>Experiencia:</strong> {candidate.stats.experiencia}</p>
