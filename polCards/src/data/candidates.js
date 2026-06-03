@@ -36,7 +36,7 @@ export const politicians = [
     vice: 'Carlos Fernando Cuevas Romero',
     party: 'Romper el Sistema',
     type: 'derecha',
-    image: '/images/raul_santiago_botero.png',
+    image: '/images/santiago_botero.png',
   }),
   createCandidate({
     id: 'abelardo-de-la-espriella',
@@ -68,7 +68,7 @@ export const politicians = [
     vice: 'Leonardo Karam Helo',
     party: 'Sondra Presidente 2026',
     type: 'centro',
-    image: '/images/sondra_macollins.png',
+    image: '/images/sandra_macollins.png',
   }),
   createCandidate({
     id: 'roy-leonardo-barreras-montealegre',
@@ -76,7 +76,7 @@ export const politicians = [
     vice: 'Martha Lucía Zamora Ávila',
     party: 'La Fuerza',
     type: 'centro',
-    image: '/images/roy_barrera.png',
+    image: '/images/roy_barreras.png',
   }),
   createCandidate({
     id: 'carlos-eduardo-caicedo-omar',
