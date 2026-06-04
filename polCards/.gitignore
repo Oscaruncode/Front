@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Data files (exclude CSV data but keep README)
+data/*.csv
+!data/README.md

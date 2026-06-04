@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicializar Base de Datos - Policards 2</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: linear-gradient(180deg, #2d1b0e 0%, #1a0f08 100%);
+      color: #f5e6d3;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #f5e6d3 0%, #e8d5b7 100%);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 0 0 4px #1a0f08, 0 0 0 6px #d4a574, 0 16px 32px rgba(0, 0, 0, 0.8);
+      color: #2c1810;
+    }
+
+    h1 {
+      margin: 0 0 24px 0;
+      font-size: 2.5rem;
+      color: #5a3825;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .description {
+      text-align: center;
+      margin-bottom: 32px;
+      line-height: 1.6;
+      color: #5a3825;
+    }
+
+    .form-section {
+      background: rgba(255, 255, 255, 0.5);
+      padding: 24px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      border: 2px solid #a0826d;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: 2px solid #a0826d;
+      border-radius: 6px;
+      background: #fff;
+      font-family: 'Georgia', serif;
+      margin-bottom: 16px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #c4914b 0%, #8b6f47 100%);
+      color: #2c1810;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #5a3825, 0 6px 12px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s ease;
+      font-family: 'Georgia', serif;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #5a3825, 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #5a3825, 0 3px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .result.success {
+      display: block;
+      background: #d1fae5;
+      border: 2px solid #059669;
+      color: #065f46;
+    }
+
+    .result.error {
+      display: block;
+      background: #fee2e2;
+      border: 2px solid #dc2626;
+      color: #991b1b;
+    }
+
+    .result h3 {
+      margin: 0 0 12px 0;
+    }
+
+    .result pre {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 16px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .ranking-table {
+      margin-top: 16px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .ranking-table th,
+    .ranking-table td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .ranking-table th {
+      background: rgba(0, 0, 0, 0.05);
+      font-weight: bold;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      font-style: italic;
+      color: #5a3825;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌱 Inicializar Base de Datos</h1>
+
+    <p class="description">
+      Este formulario inicializa la base de datos de Policards 2 con el ranking inicial de candidatos.
+      <strong>Total: 100 votos distribuidos entre 13 candidatos.</strong>
+    </p>
+
+    <div class="form-section">
+      <label for="secret">Clave Secreta:</label>
+      <input
+        type="text"
+        id="secret"
+        placeholder="policards-seed-2026"
+        value="policards-seed-2026"
+      />
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="reset" />
+        <label for="reset" style="margin: 0;">Resetear datos existentes (⚠️ elimina contadores actuales)</label>
+      </div>
+
+      <button id="seedBtn" onclick="seedDatabase()">
+        Inicializar Base de Datos
+      </button>
+    </div>
+
+    <div id="loading" class="loading" style="display: none;">
+      ⏳ Inicializando base de datos...
+    </div>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    async function seedDatabase() {
+      const secretInput = document.getElementById('secret');
+      const resetCheckbox = document.getElementById('reset');
+      const resultDiv = document.getElementById('result');
+      const loadingDiv = document.getElementById('loading');
+      const seedBtn = document.getElementById('seedBtn');
+
+      const secret = secretInput.value.trim();
+      const reset = resetCheckbox.checked;
+
+      if (!secret) {
+        resultDiv.className = 'result error';
+        resultDiv.innerHTML = '<h3>❌ Error</h3><p>Por favor ingresa la clave secreta.</p>';
+        return;
+      }
+
+      // Mostrar loading
+      loadingDiv.style.display = 'block';
+      resultDiv.style.display = 'none';
+      seedBtn.disabled = true;
+
+      try {
+        const response = await fetch('/api/stats/seed', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ secret, reset }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || `HTTP ${response.status}`);
+        }
+
+        // Mostrar éxito
+        resultDiv.className = 'result success';
+        resultDiv.innerHTML = `
+          <h3>✅ Base de datos inicializada exitosamente</h3>
+          <p><strong>Total de votos:</strong> ${data.data.totalVotes}</p>
+          <p><strong>Total de partidas:</strong> ${data.data.totalMatches}</p>
+
+          <h4>📊 Ranking Inicial:</h4>
+          <table class="ranking-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Candidato</th>
+                <th>Votos</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.data.ranking.map(item => `
+                <tr>
+                  <td>${item.position}</td>
+                  <td>${item.id}</td>
+                  <td><strong>${item.count}</strong></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <p style="margin-top: 16px;">
+            🎉 <strong>¡Listo!</strong> Ahora puedes ver el ranking en la aplicación.
+          </p>
+        `;
+
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.innerHTML = `
+          <h3>❌ Error al inicializar</h3>
+          <p><strong>Mensaje:</strong> ${error.message}</p>
+
+          <h4>💡 Posibles soluciones:</h4>
+          <ul>
+            <li>Verifica que el servidor esté corriendo</li>
+            <li>Verifica que la clave secreta sea correcta</li>
+            <li>Revisa la consola del navegador para más detalles</li>
+          </ul>
+        `;
+        console.error('Error completo:', error);
+      } finally {
+        loadingDiv.style.display = 'none';
+        seedBtn.disabled = false;
+      }
+    }
+
+    // Permitir submit con Enter
+    document.getElementById('secret').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        seedDatabase();
+      }
+    });
+  </script>
+</body>
+</html>

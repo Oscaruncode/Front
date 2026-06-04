@@ -6,6 +6,7 @@ import EventBanner from './components/EventBanner';
 import BattleLog from './components/BattleLog';
 import Card from './components/Card';
 import Ranking from './components/Ranking';
+import UserRegistration from './components/UserRegistration';
 import { politicians, shuffleDeck } from './data/candidates';
 import events from './data/events';
 import { resolveDecision } from './game/battleEngine';
@@ -19,6 +20,7 @@ import {
   fetchCandidateRatings,
   syncRatingAdjustment,
 } from './services/ratingsService';
+import { isUserRegistered, registerUser } from './services/userService';
 
 const INITIAL_OPINION = 50;
 const MAX_TURNS = 4;
@@ -53,8 +55,13 @@ const App = () => {
   const [adjustmentLocked, setAdjustmentLocked] = useState(false);
   const [selectedAdjustCandidateId, setSelectedAdjustCandidateId] = useState(null);
   const [selectedStatField, setSelectedStatField] = useState(null);
+  const [userRegistered, setUserRegistered] = useState(false);
 
   useEffect(() => {
+    // Verificar si el usuario ya está registrado
+    const registered = isUserRegistered();
+    setUserRegistered(registered);
+
     const localRatings = getLocalRatings();
     setCandidateRatings(localRatings);
 
@@ -104,6 +111,8 @@ const App = () => {
 
   const toggleCandidateSelection = (id) => {
     if (screen !== 'candidates') return;
+    // Prevenir interacción si no está registrado
+    if (!userRegistered) return;
     setCandidateSelection((prev) =>
       prev.includes(id)
         ? prev.filter((candidateId) => candidateId !== id)
@@ -139,6 +148,18 @@ const App = () => {
     setProfile(null);
     setScreen('battle');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleUserRegistration = async (userData) => {
+    const success = await registerUser(userData);
+
+    if (success) {
+      setUserRegistered(true);
+      setShowRegistration(false);
+      console.log('[App] User registered successfully:', userData);
+    } else {
+      console.error('[App] User registration failed');
+    }
   };
 
   const handleRatingChange = async (candidateId, delta) => {
@@ -267,7 +288,7 @@ const App = () => {
               ))}
             </div>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '16px' }}>
-              <button type="button" className="start-button" onClick={handleStartMatch} disabled={candidateSelection.length !== 4}>
+              <button type="button" className="start-button" onClick={handleStartMatch} disabled={candidateSelection.length !== 4 || !userRegistered}>
                 Comenzar partida
               </button>
               <button type="button" className="btn-secondary" onClick={() => setShowCandidateStats(true)} style={{ padding: '12px 24px' }}>
@@ -329,6 +350,10 @@ const App = () => {
               </div>
             </div>
           </div>
+        )}
+        {/* Modal de registro de usuario - aparece si no está registrado */}
+        {!userRegistered && (
+          <UserRegistration onComplete={handleUserRegistration} />
         )}
       </div>
     );
