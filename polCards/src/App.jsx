@@ -11,6 +11,7 @@ import { politicians, shuffleDeck } from './data/candidates';
 import events from './data/events';
 import { resolveDecision } from './game/battleEngine';
 import { analyzeProfile } from './game/ideologyEngine';
+import { applyDecisionEffects, getStatsChangeMessage } from './game/statsEngine';
 import { trackEvent } from './services/analyticsService';
 import { recordMatch } from './services/statsService';
 import {
@@ -56,6 +57,7 @@ const App = () => {
   const [selectedAdjustCandidateId, setSelectedAdjustCandidateId] = useState(null);
   const [selectedStatField, setSelectedStatField] = useState(null);
   const [userRegistered, setUserRegistered] = useState(false);
+  const [dynamicCandidateStats, setDynamicCandidateStats] = useState({}); // Stats que cambian durante el juego
 
   useEffect(() => {
     // Verificar si el usuario ya está registrado
@@ -85,9 +87,9 @@ const App = () => {
       politicians.map((candidate) => ({
         ...candidate,
         rating: candidateRatings[candidate.id] ?? candidate.rating ?? 5.0,
-        stats: { ...candidate.stats },
+        stats: dynamicCandidateStats[candidate.id] ?? { ...candidate.stats },
       })),
-    [candidateRatings]
+    [candidateRatings, dynamicCandidateStats]
   );
 
   const availableCandidatesForSelection = useMemo(
@@ -146,6 +148,7 @@ const App = () => {
     ]);
     setMatchEnded(false);
     setProfile(null);
+    setDynamicCandidateStats({}); // Resetear stats dinámicas al iniciar nueva partida
     setScreen('battle');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -190,13 +193,25 @@ const App = () => {
     const result = resolveDecision(currentEvent, selectedOptionId);
     const nextApproval = Math.min(100, Math.max(0, approval + result.scoreDelta));
 
+    // Aplicar cambios dinámicos a las stats del candidato
+    const oldStats = selectedCandidate.stats;
+    const newStats = applyDecisionEffects(selectedCandidate, currentEvent, result.choice, result);
+
+    setDynamicCandidateStats((prev) => ({
+      ...prev,
+      [selectedCandidate.id]: newStats,
+    }));
+
+    // Generar mensaje de cambio de stats
+    const statsMessage = getStatsChangeMessage(oldStats, newStats, selectedCandidate.name);
+
     setApproval(nextApproval);
     setUsedPlayerCards((prev) => [...prev, selectedCandidate.id]);
 
     setBattleLog((prev) => [
       {
         time: `Turno ${turnNumber}`,
-        text: `${selectedCandidate.name} tomó la decisión: ${result.choice?.label || 'Sin opción valida'}. ${result.message} (${result.scoreDelta >= 0 ? '+' : ''}${result.scoreDelta}). Satisfacción: ${nextApproval}%`,
+        text: `${selectedCandidate.name} tomó la decisión: ${result.choice?.label || 'Sin opción valida'}. ${result.message} (${result.scoreDelta >= 0 ? '+' : ''}${result.scoreDelta}). Satisfacción: ${nextApproval}%${statsMessage ? `\n${statsMessage}` : ''}`,
       },
       ...prev,
     ]);

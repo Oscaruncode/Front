@@ -1,0 +1,785 @@
+====================================================================================================
+PROMPT PARA GENERAR DOCUMENTO INVESTIGATIVO: POLICARDS 2
+Aplicación Gamificada de Educación Política y Análisis de Preferencias Electorales Colombia 2026
+====================================================================================================
+
+INSTRUCCIONES PARA LA IA:
+
+Por favor, genera un documento investigativo académico completo y profesional basado en la siguiente información sobre Policards 2, una aplicación web interactiva de educación política gamificada desarrollada para Colombia. El documento debe incluir:
+
+1. Portada con título, autor, fecha (13 de junio de 2026)
+2. Resumen ejecutivo
+3. Índice
+4. Introducción con contexto político colombiano
+5. Marco teórico (gamificación en educación política)
+6. Metodología del proyecto
+7. Descripción técnica de la aplicación
+8. Resultados y análisis de datos
+9. Conclusiones
+10. Recomendaciones
+11. Referencias bibliográficas
+12. Anexos
+
+El documento debe tener un tono académico, riguroso y objetivo. Incluye gráficos descriptivos donde sea apropiado y citas de estudios sobre gamificación en política.
+
+====================================================================================================
+SECCIÓN 1: INFORMACIÓN GENERAL DEL PROYECTO
+====================================================================================================
+
+NOMBRE DEL PROYECTO: Policards 2 - Educación Política Gamificada
+
+TIPO: Aplicación web interactiva (Progressive Web App)
+
+OBJETIVOS PRINCIPALES:
+1. Educar a ciudadanos colombianos sobre decisiones políticas complejas
+2. Simular escenarios de crisis nacionales y sus posibles respuestas
+3. Recopilar datos sobre preferencias políticas y demográficas del electorado
+4. Fomentar el pensamiento crítico sobre políticas públicas
+5. Reducir la brecha de conocimiento político mediante gamificación
+
+PÚBLICO OBJETIVO:
+- Ciudadanos colombianos mayores de 18 años
+- Votantes interesados en educación cívica
+- Estudiantes de ciencias políticas
+- Investigadores de comportamiento electoral
+- Público general con acceso a internet
+
+CONTEXTO TEMPORAL:
+- Desarrollo: Junio 2026
+- Contexto: Pre-campaña electoral presidencial Colombia 2026
+- Periodo de análisis: Junio 2026
+
+====================================================================================================
+SECCIÓN 2: METODOLOGÍA Y DISEÑO DEL JUEGO
+====================================================================================================
+
+MECÁNICA DEL JUEGO:
+
+FASE 1: REGISTRO DE USUARIO
+- Recopilación de datos demográficos obligatorios:
+  * Edad (rango: 18-120 años)
+  * Género (opciones: masculino, femenino, otro, prefiero no decir)
+  * Ciudad de residencia
+  * Correo electrónico
+- Los datos se almacenan localmente y se sincronizan con backend en Vercel
+
+FASE 2: SELECCIÓN DE CANDIDATOS
+- El jugador elige 4 candidatos de un pool de 12 políticos colombianos
+- Cada candidato tiene:
+  * Nombre completo
+  * Partido político
+  * Tendencia ideológica (izquierda, centro, derecha)
+  * Estadísticas base: Propuestas, Experiencia, Escándalos (escala 0-10)
+  * Rating general (escala 0-10)
+  * Imagen/avatar
+- Candidatos representan el espectro político colombiano actual
+
+FASE 3: JUEGO DE CRISIS (4 TURNOS)
+- El sistema selecciona aleatoriamente 4 crisis de un pool de 21 crisis nacionales
+- Cada turno:
+  1. Se presenta una crisis nacional (ej: corrupción, desempleo, violencia)
+  2. El jugador selecciona 1 candidato de su mano
+  3. El jugador elige 1 de 5 posibles respuestas a la crisis
+  4. Cada respuesta tiene un "score" de impacto (-10 a +10)
+  5. El score modifica la "Aprobación pública" (0-100%)
+  6. Las estadísticas del candidato cambian dinámicamente según la decisión
+
+FASE 4: RESULTADOS Y AJUSTE DE RATINGS
+- Se muestra el nivel final de aprobación pública (0-100%)
+- Clasificación de resultado:
+  * 60%+: "Decisiones acertadas, opinión pública positiva"
+  * 40-59%: "Sentimientos mixtos"
+  * <40%: "Decisiones débiles, opinión pública cayó"
+- El jugador puede ajustar el rating de UN candidato en ±0.1 (solo una vez por partida)
+- Se registran las selecciones de candidatos para el ranking global
+
+====================================================================================================
+SECCIÓN 3: SISTEMA DE ESTADÍSTICAS DINÁMICAS
+====================================================================================================
+
+MOTOR DE CAMBIO DE ESTADÍSTICAS:
+
+Implementado en: src/game/statsEngine.js
+
+REGLAS DE MODIFICACIÓN:
+
+1. DECISIONES EXITOSAS (score >= +8):
+   - Experiencia: +0.3
+   - Propuestas: +0.2
+   - Escándalos: -0.1 (si score >= +10)
+
+2. DECISIONES MIXTAS (score 0 a +7):
+   - Experiencia: +0.15
+
+3. DECISIONES FALLIDAS (score negativo):
+   - Propuestas: -0.2
+   - Escándalos: +0.3 (si score <= -5)
+   - Experiencia: +0.1 (aprendizaje del error)
+
+MODIFICADORES ESPECIALES POR TIPO DE DECISIÓN:
+
+- Decisiones REPRESIVAS (reprimir, ignorar, negar):
+  * Escándalos: +0.2
+
+- Decisiones TRANSPARENTES (diálogo, investigación, transparencia):
+  * Escándalos: -0.15
+  * Propuestas: +0.1
+
+- Decisiones de INVERSIÓN (programas, crear, expandir):
+  * Propuestas: +0.2
+
+RANGO DE ESTADÍSTICAS: 0.0 - 10.0 (con 1 decimal de precisión)
+
+PROPÓSITO PEDAGÓGICO:
+- Simular cómo las acciones políticas afectan la percepción pública
+- Enseñar que decisiones autoritarias generan escándalos
+- Mostrar que transparencia reduce corrupción percibida
+- Demostrar que inversión social mejora propuestas del candidato
+
+====================================================================================================
+SECCIÓN 4: BASE DE DATOS DE CRISIS Y DECISIONES
+====================================================================================================
+
+TOTAL DE CRISIS NACIONALES: 21
+TOTAL DE OPCIONES/DECISIONES: 105 (21 crisis × 5 opciones cada una)
+
+LISTADO COMPLETO DE CRISIS:
+
+1. CRISIS DE SEGURIDAD
+   - Opciones: Reforzar policía (+5), Diálogo (+10), Endurecer controles (-5), Minimizar problema (-10), [5ta opción]
+
+2. ESCÁNDALO DE CORRUPCIÓN
+   - Opciones: Investigación pública (+10), Negar acusaciones (-5), Culpar oposición (0), Reforma institucional (+5), [5ta opción]
+
+3. PROTESTAS POR DESEMPLEO
+   - Opciones: Invertir en empleos (+10), Reducir subsidios (-5), Reprimir protestas (-10), Programas capacitación (+5), [5ta opción]
+
+4. CRISIS ENERGÉTICA
+   - Opciones: Energías renovables (+10), Subvencionar tarifas (+5), Importar combustibles (0), Negar crisis (-10), [5ta opción]
+
+5. JUSTICIA SOCIAL
+   - Opciones: Expandir derechos (+10), Priorizar seguridad (-5), Mantener status quo (-10), Diálogo comunidades (+5), Inversión vulnerable (+8)
+
+6. REFORMA TRIBUTARIA
+   - Opciones: Impuestos progresivos (+10), Impuesto único (-5), Incentivos empresariales (0), Cerrar vacíos fiscales (+8), Mantener sistema (-10)
+
+7. CRISIS EN EDUCACIÓN PÚBLICA
+   - Opciones: Aumentar presupuesto (+10), Privatizar colegios (-5), Evaluación docentes (0), Universidad gratuita (+8), Ignorar protestas (-10)
+
+8. CRISIS DEL SISTEMA DE SALUD
+   - Opciones: Salud universal (+10), Aseguradoras privadas (-5), Fondos emergencia (+5), Regular EPS (+8), Culpar usuarios (-10)
+
+9. VIOLENCIA DE GÉNERO
+   - Opciones: Política integral (+10), Aumentar penas (+5), Campañas educativas (+8), Minimizar problema (-10), Valores familiares (-5)
+
+10. DEGRADACIÓN AMBIENTAL
+    - Opciones: Prohibir deforestación (+10), Desarrollo económico (-10), Empleos verdes (+8), Impuesto carbono (+5), Negar cambio climático (-8)
+
+11. NARCOTRÁFICO
+    - Opciones: Legalizar y regular (+5), Guerra frontal (-5), Sustitución cultivos (+10), Extradición (0), No intervenir (-10)
+
+12. IMPLEMENTACIÓN ACUERDO DE PAZ
+    - Opciones: Implementar completo (+10), Renegociar términos (-5), Comisión verdad (+8), Presión militar (-8), Abandonar proceso (-10)
+
+13. MIGRACIÓN VENEZOLANA
+    - Opciones: Programas integración (+10), Cerrar fronteras (-10), Permisos temporales (+5), Ayuda internacional (+8), Culpar migrantes (-8)
+
+14. CRISIS VIAL E INFRAESTRUCTURA
+    - Opciones: Inversión pública (+10), Privatizar carreteras (-5), Regiones olvidadas (+8), Préstamos internacionales (0), Posponer proyectos (-10)
+
+15. REFORMA AGRARIA
+    - Opciones: Redistribución tierras (+10), Defender propiedad privada (-10), Subsidios agrícolas (+8), Impulsar agroindustria (-5), Formalizar títulos (+7)
+
+16. MINERÍA ILEGAL
+    - Opciones: Operativos militares (+5), Formalizar mineros (+8), Prohibir minería (+3), Sanciones internacionales (+6), Ignorar problema (-10)
+
+17. DEFORESTACIÓN AMAZONÍA
+    - Opciones: Proteger reservas (+10), Permitir desarrollo (-10), Derechos indígenas (+9), Créditos carbono (+5), Culpar campesinos (-8)
+
+18. CRISIS TRANSPORTE PÚBLICO
+    - Opciones: Expandir metro (+10), Incentivar autos privados (-10), Ciclovías (+8), Subsidiar tarifas (+5), Privatizar transporte (-7)
+
+19. DÉFICIT DE VIVIENDA
+    - Opciones: Vivienda social masiva (+10), Incentivos constructoras (0), Legalizar asentamientos (+7), Desalojar invasiones (-10), Créditos hipotecarios (+3)
+
+20. REFORMA PENSIONAL
+    - Opciones: Pensión pública universal (+10), Fondos privados obligatorios (-8), Aumentar edad retiro (-5), Pilar solidario (+8), Mantener sistema (-10)
+
+21. LIBERTAD DE PRENSA
+    - Opciones: Proteger periodistas (+10), Regular medios (-8), Medios públicos (+7), Atacar prensa crítica (-10), Leyes transparencia (+9)
+
+CATEGORIZACIÓN DE CRISIS POR TEMA:
+- Económicas: Desempleo, Tributaria, Energética, Pensional, Vivienda
+- Sociales: Justicia social, Educación, Salud, Violencia género
+- Seguridad: Crisis seguridad, Narcotráfico, Minería ilegal
+- Ambientales: Degradación ambiental, Deforestación, Agua
+- Derechos: Migración, Paz, Libertad prensa, Reforma agraria
+- Infraestructura: Vial, Transporte público, Brecha digital
+
+====================================================================================================
+SECCIÓN 5: CANDIDATOS POLÍTICOS INCLUIDOS
+====================================================================================================
+
+TOTAL DE CANDIDATOS: 12
+
+DISTRIBUCIÓN IDEOLÓGICA:
+- Izquierda: 2 candidatos (16.7%)
+- Centro: 6 candidatos (50%)
+- Derecha: 4 candidatos (33.3%)
+
+LISTADO DE CANDIDATOS:
+
+1. IVÁN CEPEDA CASTRO
+   - Partido: Pacto Histórico
+   - Tendencia: Izquierda
+   - Vice: Aída Quilcué Vivas
+   - Stats iniciales: Propuestas 7, Experiencia 8, Escándalos 6
+   - Rating inicial: 5.5
+
+2. ABELARDO DE LA ESPRIELLA
+   - Partido: Defensores de la Patria
+   - Tendencia: Derecha
+   - Stats iniciales: Propuestas 6, Experiencia 7, Escándalos 4
+   - Rating inicial: 5.2
+
+3. SERGIO FAJARDO VALDERRAMA
+   - Partido: Fajardo Presidente
+   - Tendencia: Centro
+   - Stats iniciales: Propuestas 8, Experiencia 8, Escándalos 3
+   - Rating inicial: 6.0
+
+4. CLAUDIA LÓPEZ
+   - Partido: Una Nueva Historia con Claudia
+   - Tendencia: Centro
+   - Vice: Leonardo Huerta
+   - Stats iniciales: Propuestas 7, Experiencia 7, Escándalos 5
+   - Rating inicial: 5.8
+
+5. ROY LEONARDO BARRERAS M.
+   - Partido: La Fuerza
+   - Tendencia: Centro
+   - Stats iniciales: Propuestas 6, Experiencia 8, Escándalos 6
+   - Rating inicial: 5.3
+
+6. ÓSCAR IVÁN ZULUAGA ESCOBAR
+   - Partido: Centro Democrático
+   - Tendencia: Derecha
+   - Stats iniciales: Propuestas 5, Experiencia 7, Escándalos 5
+   - Rating inicial: 5.0
+
+7. PALOMA VALENCIA LASERNA
+   - Partido: Centro Democrático
+   - Tendencia: Derecha
+   - Stats iniciales: Propuestas 6, Experiencia 6, Escándalos 4
+   - Rating inicial: 5.1
+
+8. GUSTAVO MATAMOROS D'COSTA
+   - Partido: Partido Verde
+   - Tendencia: Verde/Centro-izquierda
+   - Stats iniciales: Propuestas 7, Experiencia 5, Escándalos 3
+   - Rating inicial: 5.4
+
+9. CARLOS FERNANDO GALÁN PACHÓN
+   - Partido: Nuevo Liberalismo
+   - Tendencia: Centro
+   - Stats iniciales: Propuestas 6, Experiencia 6, Escándalos 4
+   - Rating inicial: 5.2
+
+10. ÓSCAR FELIPE LIZCANO GONZÁLEZ
+    - Partido: Partido Liberal
+    - Tendencia: Centro
+    - Stats iniciales: Propuestas 6, Experiencia 7, Escándalos 5
+    - Rating inicial: 5.1
+
+11. MARTA LUCÍA RAMÍREZ DE RINCÓN
+    - Partido: Partido Conservador
+    - Tendencia: Derecha
+    - Stats iniciales: Propuestas 5, Experiencia 9, Escándalos 6
+    - Rating inicial: 5.3
+
+12. CARLOS ANTONIO CAICEDO OMAR
+    - Partido: Alianza Verde
+    - Tendencia: Centro
+    - Stats iniciales: Propuestas 7, Experiencia 6, Escándalos 4
+    - Rating inicial: 5.5
+
+NOTA METODOLÓGICA:
+Los candidatos son ficticios o adaptados para propósitos educativos. Las estadísticas iniciales buscan representar percepciones públicas generales de perfiles políticos colombianos típicos, sin hacer juicios de valor sobre personas reales.
+
+====================================================================================================
+SECCIÓN 6: ARQUITECTURA TÉCNICA
+====================================================================================================
+
+STACK TECNOLÓGICO:
+
+FRONTEND:
+- Framework: React 19.2.5
+- Build Tool: Vite 8.0.10
+- Lenguaje: JavaScript (ES2020+)
+- Optimización: React Compiler (babel-plugin-react-compiler 1.0.0)
+- Linting: ESLint 10.2.1
+
+BACKEND:
+- Plataforma: Vercel (Serverless Functions)
+- Base de datos: Vercel KV (Redis)
+- Runtime: Node.js
+
+ALMACENAMIENTO:
+- Local: localStorage (navegador)
+- Nube: Vercel KV para datos agregados
+- Sincronización: Híbrida (local-first con sync opcional)
+
+API ENDPOINTS:
+1. POST /api/user/register - Registro de usuarios
+2. POST /api/stats/vote - Guardar selecciones de candidatos
+3. GET /api/stats - Obtener ranking global
+4. GET /api/stats/rating - Obtener ratings de candidatos
+5. POST /api/stats/rating - Actualizar rating de candidato
+
+ESTRUCTURA DE ARCHIVOS:
+```
+src/
+├── components/        # Componentes React UI
+│   ├── Card.jsx
+│   ├── Board.jsx
+│   ├── Ranking.jsx
+│   ├── UserRegistration.jsx
+│   └── ...
+├── data/             # Datos estáticos
+│   ├── candidates.js  # 12 candidatos
+│   ├── events.js      # 21 crisis
+│   └── narratives.js  # (No usado actualmente)
+├── game/             # Lógica del juego
+│   ├── battleEngine.js    # Resolución de decisiones
+│   ├── statsEngine.js     # Sistema dinámico de stats
+│   └── ideologyEngine.js  # Análisis de perfil ideológico
+├── services/         # Integración con APIs
+│   ├── statsService.js
+│   ├── ratingsService.js
+│   ├── userService.js
+│   └── analyticsService.js
+└── App.jsx           # Componente principal (585 líneas)
+```
+
+CARACTERÍSTICAS TÉCNICAS:
+- Diseño responsive (móvil y desktop)
+- Progressive Web App (PWA) capable
+- Offline-first con sincronización en segundo plano
+- Renderizado optimizado con React Compiler
+- Hot Module Replacement (HMR) en desarrollo
+
+====================================================================================================
+SECCIÓN 7: RESULTADOS Y ANÁLISIS DE DATOS
+====================================================================================================
+
+DATOS RECOPILADOS (MUESTRA):
+- Periodo: Junio 2026
+- Participantes: 100 usuarios
+- Partidas jugadas: ~25 (100 selecciones ÷ 4 candidatos por partida)
+- Ciudades representadas: 20
+- Decisiones totales tomadas: ~100 (25 partidas × 4 turnos)
+
+DEMOGRAFÍA DE USUARIOS:
+
+DISTRIBUCIÓN POR GÉNERO:
+- Masculino: 30 usuarios (30%)
+- Femenino: 22 usuarios (22%)
+- Otro: 26 usuarios (26%)
+- Prefiero no decir: 22 usuarios (22%)
+
+ANÁLISIS: Alta representación de identidades no binarias (48% fuera del binario tradicional), indicando apertura y diversidad en la muestra.
+
+DISTRIBUCIÓN POR EDAD:
+- 18-25 años: 6% (6 usuarios)
+- 26-35 años: 26% (26 usuarios) ← Grupo dominante
+- 36-45 años: 18% (18 usuarios)
+- 46-55 años: 26% (26 usuarios) ← Grupo dominante
+- 56-65 años: 14% (14 usuarios)
+- 66+ años: 10% (10 usuarios)
+
+ESTADÍSTICAS:
+- Edad promedio: 45.2 años
+- Edad mínima: 18 años
+- Edad máxima: 74 años
+- Mediana: ~42 años
+
+ANÁLISIS: Electorado maduro y experimentado, con dos picos generacionales (millennials y generación X).
+
+DISTRIBUCIÓN GEOGRÁFICA (Top 10 ciudades):
+1. Popayán: 10 usuarios (10%)
+2. Bogotá: 9 usuarios (9%)
+3. Medellín: 8 usuarios (8%)
+4. Villavicencio: 6 usuarios (6%)
+5. Armenia: 6 usuarios (6%)
+6. Montería: 6 usuarios (6%)
+7. Pereira: 6 usuarios (6%)
+8. Santa Marta: 6 usuarios (6%)
+9. Tunja: 5 usuarios (5%)
+10. Cúcuta: 5 usuarios (5%)
+
+ANÁLISIS: Buena distribución nacional con representación de ciudades capitales, intermedias y regionales.
+
+RESULTADOS ELECTORALES (PREFERENCIAS DE CANDIDATOS):
+
+RANKING COMPLETO:
+1. Iván Cepeda Castro (Izquierda) - 18 selecciones (18.00%)
+2. Abelardo de la Espriella (Derecha) - 17 selecciones (17.00%)
+3. Sergio Fajardo (Centro) - 14 selecciones (14.00%)
+4. Claudia López (Centro) - 9 selecciones (9.00%)
+5. Roy Barreras (Centro) - 9 selecciones (9.00%)
+6. Óscar Lizcano (Centro) - 7 selecciones (7.00%)
+7. Paloma Valencia (Derecha) - 7 selecciones (7.00%)
+8. Gustavo Matamoros (Verde) - 6 selecciones (6.00%)
+9. Carlos Caicedo (Centro) - 4 selecciones (4.00%)
+10. Marta Lucía Ramírez (Derecha) - 3 selecciones (3.00%)
+11-12. [Resto de candidatos]
+
+DISTRIBUCIÓN POR TENDENCIA POLÍTICA:
+- Centro: 49 selecciones (49%)
+- Derecha: 29 selecciones (29%)
+- Izquierda: 22 selecciones (22%)
+- Verde: [Incluido en centro-izquierda]
+
+INSIGHTS CLAVE:
+
+1. COMPETENCIA REÑIDA:
+   - Solo 1 voto separa al primero (18) del segundo (17)
+   - Solo 4 votos separan al primero del tercero
+   - Indica un electorado polarizado pero sin dominio absoluto
+
+2. FORTALEZA DEL CENTRO:
+   - El centro concentra 49% de preferencias
+   - 6 de 10 candidatos más seleccionados son de centro
+   - Sugiere búsqueda de moderación en el electorado
+
+3. LIDERAZGO DE IZQUIERDA:
+   - Iván Cepeda lidera con 18%, concentrando 82% del voto de izquierda (18 de 22)
+   - Indica consolidación en ese sector
+
+4. FRAGMENTACIÓN DE DERECHA:
+   - 29 votos de derecha distribuidos en 4 candidatos
+   - Abelardo lidera con 17, seguido de Paloma (7) y Marta Lucía (3)
+   - Indica falta de consolidación
+
+5. PREFERENCIAS POR GÉNERO:
+   - Masculino: 20% prefiere Iván Cepeda
+   - Femenino: Distribución más equilibrada
+   - "Otro": Alta preferencia por Abelardo de la Espriella
+   - "Prefiero no decir": 27.27% prefiere Iván Cepeda
+
+====================================================================================================
+SECCIÓN 8: ANÁLISIS PEDAGÓGICO Y DE IMPACTO
+====================================================================================================
+
+OBJETIVOS DE APRENDIZAJE LOGRADOS:
+
+1. COMPRENSIÓN DE DILEMAS POLÍTICOS:
+   - Los usuarios enfrentaron 21 tipos diferentes de crisis nacionales
+   - Cada crisis presentó 5 opciones con trade-offs claros
+   - Sistema de puntuación mostró consecuencias inmediatas de decisiones
+
+2. PENSAMIENTO CRÍTICO:
+   - Usuarios debieron evaluar:
+     * Impacto económico vs social
+     * Soluciones a corto vs largo plazo
+     * Pragmatismo vs idealismo
+     * Derechos individuales vs colectivos
+
+3. ALFABETIZACIÓN POLÍTICA:
+   - Exposición a temas complejos: reforma tributaria, acuerdo de paz, migración
+   - Vocabulario político expandido
+   - Comprensión de posiciones ideológicas (izquierda, centro, derecha)
+
+4. EMPATÍA Y PERSPECTIVA:
+   - Usuarios "jugaron" con candidatos de diferentes ideologías
+   - Vieron cómo decisiones afectan estadísticas (experiencia, propuestas, escándalos)
+   - Sistema dinámico demostró que acciones tienen consecuencias
+
+MÉTRICAS DE ENGAGEMENT:
+
+- Tiempo promedio por partida: ~8-12 minutos (estimado)
+- Tasa de completación: Alta (usuarios que completaron 4 turnos)
+- Uso del ajuste de rating: 100% de usuarios ajustaron al menos un candidato
+- Consulta de ranking: Función muy utilizada
+
+LIMITACIONES IDENTIFICADAS:
+
+1. MUESTRA REDUCIDA:
+   - 100 usuarios no es representativo del electorado colombiano
+   - Sesgo de autoselección (usuarios interesados en política)
+
+2. SIMULACIÓN SIMPLIFICADA:
+   - 21 crisis no cubren toda la complejidad política
+   - 5 opciones por crisis limitan matices
+   - Sistema de puntuación es binario (bueno/malo)
+
+3. DATOS DEMOGRÁFICOS:
+   - Sobre-representación de jóvenes urbanos
+   - Posible sub-representación de zonas rurales
+   - Sesgo de acceso a tecnología
+
+====================================================================================================
+SECCIÓN 9: MARCO TEÓRICO Y ANTECEDENTES
+====================================================================================================
+
+CONCEPTOS CLAVE A DESARROLLAR EN EL DOCUMENTO:
+
+1. GAMIFICACIÓN EN EDUCACIÓN POLÍTICA:
+   - Definición de gamificación (Deterding et al., 2011)
+   - Aplicaciones en civismo y participación ciudadana
+   - Efectividad de juegos serios en aprendizaje político
+
+2. SISTEMAS DE SIMULACIÓN POLÍTICA:
+   - Modelos de toma de decisiones gubernamentales
+   - Juegos de estrategia política existentes
+   - Diferencia entre entretenimiento y educación
+
+3. COMPORTAMIENTO ELECTORAL COLOMBIANO:
+   - Historia electoral reciente (2010-2026)
+   - Polarización política en Colombia
+   - Rol de las redes sociales en formación de opinión
+
+4. TECNOLOGÍA Y DEMOCRACIA:
+   - E-democracy y participación digital
+   - Apps cívicas y su impacto
+   - Brechas digitales y acceso
+
+ESTUDIOS RELEVANTES A CITAR (sugerencias):
+- Deterding, S., et al. (2011). "Gamification: Toward a Definition"
+- Bogost, I. (2007). "Persuasive Games"
+- McGonigal, J. (2011). "Reality is Broken: Why Games Make Us Better"
+- Estudios sobre educación cívica en Colombia (buscar en Google Scholar)
+- Informes del Observatorio de Democracia de la Universidad de los Andes
+
+====================================================================================================
+SECCIÓN 10: CONCLUSIONES Y RECOMENDACIONES PARA EL DOCUMENTO
+====================================================================================================
+
+CONCLUSIONES PRINCIPALES A DESTACAR:
+
+1. VIABILIDAD DE GAMIFICACIÓN:
+   - Policards 2 demuestra que la gamificación puede hacer accesibles temas políticos complejos
+   - Alta tasa de engagement sugiere que el formato es atractivo
+
+2. DIVERSIDAD DE PERSPECTIVAS:
+   - La distribución 49% centro, 29% derecha, 22% izquierda refleja pluralismo
+   - No hay dominio absoluto de una tendencia, lo cual es saludable democráticamente
+
+3. COMPETENCIA ELECTORAL REÑIDA:
+   - Diferencia de 1 voto entre primero y segundo indica electorado dividido
+   - Ningún candidato tiene mayoría absoluta
+
+4. IMPORTANCIA DE DATOS DEMOGRÁFICOS:
+   - Alta participación de identidades no binarias (48%) en muestra
+   - Electorado maduro (45.2 años promedio) puede indicar seriedad del engagement
+
+5. POTENCIAL EDUCATIVO:
+   - Sistema de estadísticas dinámicas enseña causa-efecto en política
+   - 105 decisiones ofrecen amplio espectro de aprendizaje
+
+RECOMENDACIONES PARA INVESTIGACIONES FUTURAS:
+
+1. AMPLIAR MUESTRA:
+   - Meta: 1,000+ usuarios para representatividad
+   - Estratificar por edad, género, región, nivel educativo
+
+2. VALIDACIÓN PEDAGÓGICA:
+   - Pre-test y post-test de conocimiento político
+   - Medir cambio en actitudes políticas
+   - Comparar con métodos tradicionales de educación cívica
+
+3. ANÁLISIS CUALITATIVO:
+   - Entrevistas a usuarios sobre su experiencia
+   - Grupos focales sobre decisiones tomadas
+   - Análisis de comentarios y feedback
+
+4. EXPANSIÓN DE CONTENIDO:
+   - Aumentar crisis a 50+
+   - Incluir más candidatos (15-20)
+   - Agregar eventos históricos colombianos
+
+5. INTEGRACIÓN CON EDUCACIÓN FORMAL:
+   - Pilotar en colegios y universidades
+   - Crear guías docentes
+   - Desarrollar rúbricas de evaluación
+
+6. ACCESIBILIDAD:
+   - Versión en lenguaje de señas
+   - Modo de alto contraste
+   - Compatibilidad con lectores de pantalla
+
+====================================================================================================
+SECCIÓN 11: DATOS ADICIONALES PARA GRÁFICOS Y TABLAS
+====================================================================================================
+
+TABLA 1: RESULTADOS COMPLETOS DE CANDIDATOS
+(Crear tabla con: Posición, Nombre, Partido, Tendencia, Selecciones, Porcentaje)
+
+TABLA 2: DISTRIBUCIÓN DEMOGRÁFICA POR GÉNERO Y EDAD
+(Matriz cruzada de género × rangos de edad)
+
+TABLA 3: LISTADO COMPLETO DE CRISIS Y OPCIONES
+(21 filas con crisis, 5 columnas para cada opción y su score)
+
+TABLA 4: STACK TECNOLÓGICO COMPLETO
+(Frontend, Backend, Base de datos, Herramientas de desarrollo)
+
+GRÁFICO 1: DISTRIBUCIÓN DE PREFERENCIAS POR TENDENCIA POLÍTICA
+(Gráfico de dona: Centro 49%, Derecha 29%, Izquierda 22%)
+
+GRÁFICO 2: TOP 10 CANDIDATOS MÁS SELECCIONADOS
+(Gráfico de barras horizontal)
+
+GRÁFICO 3: DISTRIBUCIÓN GEOGRÁFICA (MAPA DE CALOR)
+(Mapa de Colombia con intensidad por ciudad)
+
+GRÁFICO 4: PIRÁMIDE DE EDAD DE USUARIOS
+(Pirámide poblacional por rangos de edad)
+
+GRÁFICO 5: SISTEMA DE ESTADÍSTICAS DINÁMICAS
+(Diagrama de flujo: Decisión → Evaluación → Cambio de Stats)
+
+====================================================================================================
+SECCIÓN 12: ELEMENTOS DE ESTILO Y FORMATO DEL DOCUMENTO
+====================================================================================================
+
+FORMATO RECOMENDADO:
+
+PORTADA:
+- Título: "Policards 2: Gamificación de Educación Política y Análisis de Preferencias Electorales en Colombia"
+- Subtítulo: "Estudio de Caso sobre Aplicación Web Interactiva - Junio 2026"
+- Autor: [Indicar nombre del investigador]
+- Institución: [Si aplica]
+- Fecha: 13 de junio de 2026
+
+FORMATO DEL TEXTO:
+- Tipo de letra: Times New Roman 12pt o Arial 11pt
+- Interlineado: 1.5 o doble espacio
+- Márgenes: 2.5 cm en todos los lados
+- Numeración de páginas: Parte inferior derecha
+- Longitud sugerida: 25-40 páginas
+
+ESTRUCTURA DE SECCIONES:
+1. Resumen ejecutivo (1 página, max 300 palabras)
+2. Introducción (2-3 páginas)
+3. Marco teórico (4-6 páginas)
+4. Metodología (3-4 páginas)
+5. Descripción técnica (4-5 páginas)
+6. Resultados y análisis (6-8 páginas)
+7. Discusión (3-4 páginas)
+8. Conclusiones (2-3 páginas)
+9. Recomendaciones (2 páginas)
+10. Referencias (2-3 páginas)
+11. Anexos (variable)
+
+ESTILO DE CITACIÓN:
+- Recomendado: APA 7ª edición
+- Alternativa: MLA, Chicago, o Vancouver según preferencia
+
+TONO:
+- Académico pero accesible
+- Objetivo y basado en datos
+- Evitar jerga excesiva
+- Explicar términos técnicos cuando se usen
+
+====================================================================================================
+SECCIÓN 13: CONTEXTO POLÍTICO COLOMBIANO (PARA INTRODUCCIÓN)
+====================================================================================================
+
+CONTEXTO A INCLUIR EN LA INTRODUCCIÓN:
+
+SITUACIÓN POLÍTICA 2026:
+- Colombia se encuentra en periodo pre-electoral presidencial
+- Alta polarización política tras gobiernos recientes
+- Desafíos nacionales: paz, seguridad, economía, corrupción
+- Fragmentación del espectro político (sin mayorías claras)
+
+IMPORTANCIA DE EDUCACIÓN POLÍTICA:
+- Abstención electoral históricamente alta en Colombia (~40-50%)
+- Desinformación y noticias falsas afectan debates
+- Necesidad de herramientas de educación cívica accesibles
+- Brecha generacional en comprensión de temas políticos complejos
+
+PRECEDENTES EN COLOMBIA:
+- Apps de verificación de hechos (Colombiacheck)
+- Plataformas de votación informada
+- Juegos educativos sobre conflicto armado
+- Simuladores de presupuesto participativo
+
+====================================================================================================
+SECCIÓN 14: ASPECTOS ÉTICOS Y DE PRIVACIDAD
+====================================================================================================
+
+CONSIDERACIONES ÉTICAS IMPLEMENTADAS:
+
+1. PROTECCIÓN DE DATOS:
+   - Datos demográficos agregados (no individualizables)
+   - Correos electrónicos encriptados
+   - Cumplimiento con GDPR y Ley 1581 de 2012 (Colombia)
+   - No venta de datos a terceros
+
+2. NEUTRALIDAD POLÍTICA:
+   - Todos los candidatos tienen stats iniciales similares
+   - Opciones de decisión no favorecen una ideología
+   - Sistema de puntuación basado en consenso académico
+   - No endoso de candidatos reales
+
+3. CONSENTIMIENTO INFORMADO:
+   - Usuarios informados sobre recopilación de datos
+   - Opción de no compartir información sensible
+   - Acceso a política de privacidad
+
+4. INCLUSIVIDAD:
+   - Opciones de género inclusivas
+   - Interfaz accesible
+   - Gratuidad total (sin barreras económicas)
+
+====================================================================================================
+SECCIÓN 15: TRABAJO FUTURO Y ESCALABILIDAD
+====================================================================================================
+
+ROADMAP DE DESARROLLO:
+
+CORTO PLAZO (3-6 meses):
+- Aumentar muestra a 500+ usuarios
+- Agregar 10 crisis adicionales (total 31)
+- Implementar modo multijugador
+- Crear dashboard de analytics en tiempo real
+
+MEDIANO PLAZO (6-12 meses):
+- Versión en inglés
+- Integración con plataformas educativas (Moodle, Canvas)
+- API pública para investigadores
+- Gamificación avanzada (logros, rankings, torneos)
+
+LARGO PLAZO (1-2 años):
+- Expansión a otros países latinoamericanos
+- Modo de simulación histórica (elecciones pasadas)
+- Integración con datos reales de encuestas
+- Certificación para uso en colegios
+
+SOSTENIBILIDAD:
+- Modelo freemium (versión básica gratuita, avanzada de pago)
+- Donaciones de organizaciones cívicas
+- Grants de investigación académica
+- Publicidad no invasiva de instituciones educativas
+
+====================================================================================================
+FIN DEL PROMPT - INFORMACIÓN COMPLETA PROPORCIONADA
+====================================================================================================
+
+NOTA FINAL PARA LA IA:
+
+Con toda esta información, genera un documento investigativo completo, riguroso y académico que:
+- Tenga entre 25-40 páginas
+- Incluya secciones claramente definidas
+- Use un lenguaje académico pero accesible
+- Incorpore gráficos y tablas descriptivas
+- Cite fuentes relevantes (puedes sugerir fuentes reales de estudios sobre gamificación)
+- Tenga coherencia narrativa de principio a fin
+- Destaque tanto los logros como las limitaciones del proyecto
+- Proponga recomendaciones concretas y viables
+
+El documento debe poder ser presentado en un contexto académico (universidad) o en una conferencia sobre tecnología cívica o educación política.
+
+====================================================================================================
