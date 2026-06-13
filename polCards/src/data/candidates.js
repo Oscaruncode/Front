@@ -1,16 +1,13 @@
-// Todos los candidatos comienzan con valores iguales para estadísticas base.
-const BASE_STATS = { propuestas: 5, experiencia: 5, escandalos: 5 };
-const BASE_RATING = 5.0;
-
-const createCandidate = ({ id, name, vice, party, type, image }) => ({
+// Cada candidato tiene estadísticas únicas basadas en su perfil político
+const createCandidate = ({ id, name, vice, party, type, image, stats, rating = 5.0 }) => ({
   id,
   name,
   vice: vice || null,
   party,
   type,
   image,
-  stats: { ...BASE_STATS },
-  rating: BASE_RATING,
+  stats: { ...stats }, // Clonar para evitar mutaciones compartidas
+  rating,
 });
 
 export const politicians = [
@@ -21,6 +18,8 @@ export const politicians = [
     party: 'Pacto Histórico',
     type: 'izquierda',
     image: '/images/ivan_cepeda.png',
+    stats: { propuestas: 7, experiencia: 8, escandalos: 6 },
+    rating: 5.5,
   }),
   createCandidate({
     id: 'claudia-lopez',
@@ -29,6 +28,8 @@ export const politicians = [
     party: 'Una Nueva Historia con Claudia',
     type: 'centro',
     image: '/images/claudia_lopez.png',
+    stats: { propuestas: 6, experiencia: 7, escandalos: 7 },
+    rating: 5.0,
   }),
   createCandidate({
     id: 'raul-santiago-botero-jaramillo',
@@ -37,6 +38,8 @@ export const politicians = [
     party: 'Romper el Sistema',
     type: 'derecha',
     image: '/images/santiago_botero.png',
+    stats: { propuestas: 5, experiencia: 4, escandalos: 3 },
+    rating: 4.5,
   }),
   createCandidate({
     id: 'abelardo-de-la-espriella',
@@ -45,6 +48,8 @@ export const politicians = [
     party: 'Defensores de la Patria',
     type: 'derecha',
     image: '/images/abelardo.png',
+    stats: { propuestas: 6, experiencia: 6, escandalos: 5 },
+    rating: 4.8,
   }),
   createCandidate({
     id: 'oscar-mauricio-lizcano-arango',
@@ -53,6 +58,8 @@ export const politicians = [
     party: 'Colombia es + ASÍ',
     type: 'centro',
     image: '/images/oscar_lizcano.png',
+    stats: { propuestas: 5, experiencia: 5, escandalos: 4 },
+    rating: 4.5,
   }),
   createCandidate({
     id: 'miguel-uribe-londono',
@@ -61,6 +68,8 @@ export const politicians = [
     party: 'Partido Demócrata Colombiano',
     type: 'derecha',
     image: '/images/miguel_uribe.png',
+    stats: { propuestas: 6, experiencia: 7, escandalos: 5 },
+    rating: 5.2,
   }),
   createCandidate({
     id: 'sondra-macollins-garvin-pinto',
@@ -69,6 +78,8 @@ export const politicians = [
     party: 'Sondra Presidente 2026',
     type: 'centro',
     image: '/images/sandra_macollins.png',
+    stats: { propuestas: 4, experiencia: 3, escandalos: 3 },
+    rating: 4.0,
   }),
   createCandidate({
     id: 'roy-leonardo-barreras-montealegre',
@@ -77,6 +88,8 @@ export const politicians = [
     party: 'La Fuerza',
     type: 'centro',
     image: '/images/roy_barreras.png',
+    stats: { propuestas: 6, experiencia: 9, escandalos: 8 },
+    rating: 5.0,
   }),
   createCandidate({
     id: 'carlos-eduardo-caicedo-omar',
@@ -85,6 +98,8 @@ export const politicians = [
     party: 'Caicedo',
     type: 'izquierda',
     image: '/images/carlos_caicedo.png',
+    stats: { propuestas: 6, experiencia: 6, escandalos: 5 },
+    rating: 5.0,
   }),
   createCandidate({
     id: 'gustavo-matamoros-covacho',
@@ -93,6 +108,8 @@ export const politicians = [
     party: 'Ecologista Colombiano',
     type: 'verde',
     image: '/images/gustavo_matamoros.png',
+    stats: { propuestas: 7, experiencia: 4, escandalos: 3 },
+    rating: 4.8,
   }),
   createCandidate({
     id: 'paloma-valencia-laserna',
@@ -101,6 +118,8 @@ export const politicians = [
     party: 'Centro Democrático',
     type: 'derecha',
     image: '/images/paloma_valencia.png',
+    stats: { propuestas: 6, experiencia: 8, escandalos: 6 },
+    rating: 5.3,
   }),
   createCandidate({
     id: 'sergio-fajardo-valderrama',
@@ -109,6 +128,8 @@ export const politicians = [
     party: 'Fajardo Presidente',
     type: 'centro',
     image: '/images/sergio_fajardo.png',
+    stats: { propuestas: 8, experiencia: 8, escandalos: 4 },
+    rating: 6.0,
   }),
   createCandidate({
     id: 'luis-gilberto-murillo-urrutia',
@@ -117,6 +138,8 @@ export const politicians = [
     party: 'Oportunidad es Colombia',
     type: 'centro',
     image: '/images/luis_murillo.png',
+    stats: { propuestas: 7, experiencia: 7, escandalos: 4 },
+    rating: 5.5,
   }),
 ];
 
